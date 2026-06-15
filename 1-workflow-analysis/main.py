@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 from agents.analyzer import TaskAnalyzer
+from agents.coordinator import WorkflowCoordinator
 from dotenv import load_dotenv
 from utils.workflow import TaskRequest
 
@@ -40,6 +41,7 @@ def main():
     project_id = os.getenv("PROJECT_ID")
 
     analyzer = TaskAnalyzer(project_id)
+    coordinator = WorkflowCoordinator(project_id)
 
     print("Agents initialized successfully")
 
@@ -59,6 +61,15 @@ def main():
         analysis_result = analyzer.analyze_task(task_request)
         print(
             f"Analysis complete: {len(analysis_result.components)} components identified"
+        )
+
+        # Step 2: Create coordination plan
+        print("Step 2: Creating coordination output...")
+        coordination_plan = coordinator.create_workflow_plan(
+            analysis_result, task_request
+        )
+        print(
+            f"Coordination plan created with {len(coordination_plan.execution_sequence)} steps"
         )
 
 

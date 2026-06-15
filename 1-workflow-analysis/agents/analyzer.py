@@ -130,14 +130,16 @@ class TaskAnalyzer:
                 contents=f"{self.llm_agent.instruction}\n\n{analysis_prompt}",
             )
 
-            print("response: ", response)
-
             # The response object from google-genai has a .text property for the main content
             cleaned_content = clean_json_string(response.text)
             if cleaned_content is None:
-                logger.error(f"Could not extract JSON from model response: {response.text}")
-                raise RuntimeError("Model response did not contain valid JSON structure.")
-            
+                logger.error(
+                    f"Could not extract JSON from model response: {response.text}"
+                )
+                raise RuntimeError(
+                    "Model response did not contain valid JSON structure."
+                )
+
             analysis_data = json.loads(cleaned_content)
 
             print("analysis_data : ", analysis_data)

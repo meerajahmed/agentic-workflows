@@ -89,3 +89,20 @@ class AnalysisResult:
     assumptions: List[str] = field(default_factory=list)
     recommendations: List[str] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.now)
+
+
+@dataclass
+class WorkflowPlan:
+    """
+    Coordinated workflow plan with sequencing and resource allocation
+    """
+
+    plan_id: str
+    task_request: TaskRequest
+    analysis_result: AnalysisResult
+    execution_sequence: List[str]  # component names in execution order
+    resource_allocation: Dict[str, Dict[str, Any]]
+    milestone_schedule: Dict[str, datetime]
+    contingency_plans: Dict[str, str] = field(default_factory=dict)
+    quality_gates: List[str] = field(default_factory=list)
+    created_at: datetime = field(default_factory=datetime.now)
