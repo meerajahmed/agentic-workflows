@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Service account keys - NEVER commit these!
+*.json
+service-account-key.json
+*-key.json
+credentials.json
+
+.DS_Store
