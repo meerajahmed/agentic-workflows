@@ -106,3 +106,29 @@ class WorkflowPlan:
     contingency_plans: Dict[str, str] = field(default_factory=dict)
     quality_gates: List[str] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.now)
+
+
+@dataclass
+class ValidationResult:
+    """
+    Result of workflow validation.
+
+    This is the output of the OutputValidator agent.
+    """
+
+    is_valid: bool
+    confidence_score: float  # 0.0 to 1.0
+    validation_errors: List[str] = field(default_factory=list)
+    validation_warnings: List[str] = field(default_factory=list)
+    suggestions: List[str] = field(default_factory=list)
+    completeness_score: float = 0.0  # 0.0 to 1.0
+    feasibility_score: float = 0.0  # 0.0 to 1.0
+    validated_at: datetime = field(default_factory=datetime.now)
+
+    def get_overall_score(self) -> float:
+        """
+        Calculate overall validation score.
+        """
+        return (
+            self.confidence_score + self.completeness_score + self.feasibility_score
+        ) / 3.0

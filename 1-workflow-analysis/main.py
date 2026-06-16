@@ -15,6 +15,7 @@ from pathlib import Path
 
 from agents.analyzer import TaskAnalyzer
 from agents.coordinator import WorkflowCoordinator
+from agents.validator import OutputValidator
 from dotenv import load_dotenv
 from utils.workflow import TaskRequest
 
@@ -42,6 +43,7 @@ def main():
 
     analyzer = TaskAnalyzer(project_id)
     coordinator = WorkflowCoordinator(project_id)
+    validator = OutputValidator(project_id)
 
     print("Agents initialized successfully")
 
@@ -70,6 +72,13 @@ def main():
         )
         print(
             f"Coordination plan created with {len(coordination_plan.execution_sequence)} steps"
+        )
+
+        # Step 3: Validate completeness and feasibility
+        print("Step 3: Validating output...")
+        validation_result = validator.validate_workflow(coordination_plan)
+        print(
+            f"Validation complete: {'Valid' if validation_result.is_valid else 'Invalid'} (Score: {validation_result.get_overall_score():.2f})"
         )
 
 
