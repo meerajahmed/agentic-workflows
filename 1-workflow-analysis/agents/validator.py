@@ -241,20 +241,25 @@ class OutputValidator:
         analysis_result = workflow_plan.analysis_result
         total_hours = analysis_result.estimated_total_hours
         task_request = workflow_plan.task_request
-        deadline_days = task_request.deadline_days
 
-        # Check if timeline is realistic (assuming 8 hours per working day)
-        required_days = total_hours / 8
-        if required_days > deadline_days:
-            warnings.append(
-                f"Timeline may be too tight: {required_days:.1f} days needed vs {deadline_days} days available"
-            )
-            feasibility_factors.append(0.3)  # Low feasibility for timeline
-        elif required_days > deadline_days * 0.8:
-            warnings.append("Time allocation may be insufficient for task complexity")
-            feasibility_factors.append(0.6)  # Medium feasibility
+        if task_request:
+            deadline_days = task_request.deadline_days
+
+            # Check if timeline is realistic (assuming 8 hours per working day)
+            required_days = total_hours / 8
+            if required_days > deadline_days:
+                warnings.append(
+                    f"Timeline may be too tight: {required_days:.1f} days needed vs {deadline_days} days available"
+                )
+                feasibility_factors.append(0.3)  # Low feasibility for timeline
+            elif required_days > deadline_days * 0.8:
+                warnings.append("Time allocation may be insufficient for task complexity")
+                feasibility_factors.append(0.6)  # Medium feasibility
+            else:
+                feasibility_factors.append(0.9)  # Good timeline feasibility
         else:
-            feasibility_factors.append(0.9)  # Good timeline feasibility
+            warnings.append("No task request provided; skipping detailed timeline and resource assessment.")
+            feasibility_factors.append(0.7)  # Default moderate feasibility for missing data
 
         # Resource feasibility
         if workflow_plan.resource_allocation:
@@ -264,7 +269,7 @@ class OutputValidator:
             )
 
             # Check if resource constraints are specified
-            if (
+            if task_request and (
                 hasattr(task_request, "resource_constraints")
                 and task_request.resource_constraints
             ):
@@ -295,9 +300,13 @@ class OutputValidator:
                     feasibility_factors.append(0.6)
                 else:
                     feasibility_factors.append(0.8)
+            elif not task_request:
+                # No constraints specified, assume moderate feasibility
+                feasibility_factors.append(0.7)
             else:
                 # No constraints specified, assume moderate feasibility
                 feasibility_factors.append(0.7)
+
 
         # Complexity assessment
         complexity_score = analysis_result.complexity_score

@@ -44,6 +44,5 @@ Agentic Workflows with Google ADK
 
 To run the workflow analysis example:
 ```bash
-cd 1-workflow-analysis
-python3 main.py
+python3 ./1-workflow-analysis/main.py
 ```

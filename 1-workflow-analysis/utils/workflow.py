@@ -132,3 +132,41 @@ class ValidationResult:
         return (
             self.confidence_score + self.completeness_score + self.feasibility_score
         ) / 3.0
+
+
+@dataclass
+class WorkflowResult:
+    """
+    Complete workflow execution result.
+
+    This represents the final output of the entire workflow process.
+    """
+
+    workflow_id: str
+    task_request: TaskRequest
+    analysis_result: AnalysisResult
+    workflow_plan: WorkflowPlan
+    validation_result: ValidationResult
+    execution_metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.now)
+
+    def is_successful(self) -> bool:
+        """Check if the workflow completed successfully."""
+        return (
+            self.validation_result.is_valid
+            and self.validation_result.confidence_score > 0.7
+            and len(self.validation_result.validation_errors) == 0
+        )
+
+    def get_summary(self) -> Dict[str, Any]:
+        """Get a summary of the workflow result."""
+        return {
+            "workflow_id": self.workflow_id,
+            "task_description": self.task_request.description[:100] + "...",
+            "components_count": len(self.analysis_result.components),
+            "estimated_hours": self.analysis_result.estimated_total_hours,
+            "complexity_score": self.analysis_result.complexity_score,
+            "validation_score": self.validation_result.get_overall_score(),
+            "is_successful": self.is_successful(),
+            "created_at": self.created_at.isoformat(),
+        }
