@@ -16,4 +16,3 @@ We are currently building a **Task Analysis Agent**. This prototype takes a comp
 - **Coordinator**: Manages the sequence of tasks.
 - **Validator**: Ensures the final output meets all original criteria.
 
-*Note: This README will be updated as new features, configuration details, and installation instructions are added to the repository.*
